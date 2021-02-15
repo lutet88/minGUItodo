@@ -1,0 +1,9 @@
+---
+Window: "QColor(25, 25, 25)"
+Base: "QColor(25, 25, 25)"
+AlternateBase: "QColor(53, 53, 53)"
+WindowText: "Qt.white"
+Text: "Qt.white"
+Link: "QColor(42, 130, 218)"
+Highlight: "QColor(70, 28, 218)"
+PlaceholderText: "QColor(180, 180, 180)"
