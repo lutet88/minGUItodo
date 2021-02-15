@@ -1,8 +1,8 @@
 import yaml
 import os
-from minGUItodo import styling
-from PySide6.QtGui import QPalette
-
+import styling
+from PySide6.QtGui import QPalette, QColor
+from PySide6.QtCore import Qt
 
 class Config(dict):
     def __init__(self):

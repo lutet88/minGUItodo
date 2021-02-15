@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import *
-from minGUItodo import config
-from minGUItodo.lower import Lower
-from minGUItodo.upper import Upper
+import config
+from lower import Lower
+from upper import Upper
 import sys
 
 class Todo(QWidget):

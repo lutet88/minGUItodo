@@ -1,7 +1,7 @@
 import dateparser
 
 # using sqlite
-from minGUItodo.sqlite import Database
+from sqlite import Database
 
 db = Database("temp.db", "minGUItodo")
 

@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import *
-from PySide6.QtCore import Qt
-from minGUItodo import command_handler
+from PySide6.QtCore import Qt, QRect, Slot
+import command_handler
 
 
 class QHLine(QFrame):
