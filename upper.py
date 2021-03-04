@@ -61,7 +61,7 @@ class Upper(QWidget):
         # kill existing boxes
         for box in self.boxes:
             self.leftbox.removeWidget(box)
-            box.__del__()
+            box.delete()
         # remove existing QSpacingItem
         self.leftbox.removeItem(self.leftbox.spacer)
 
@@ -73,7 +73,7 @@ class Upper(QWidget):
         latest = db.getLatestTimestamp()
         tasks = db.queryTasks(today, latest if latest > today else today)
 
-        todate = today / 86400
+        # todate = today / 86400
         # split into days
         days = {}
         # print(tasks)
@@ -145,7 +145,7 @@ class DayBox(QWidget):
                     tl.setStyleSheet("QLabel { color : white; }")
             self.layout.addWidget(tl)
 
-    def __del__(self):
+    def delete(self):
         try:
             self.daylabel.setText("")
             self.hide()

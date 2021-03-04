@@ -42,5 +42,8 @@ class Config(dict):
         print(key, self.configuration[key], "->", item)
         self.configuration[key] = item
 
+    def __eq__(self, other):  # why are you comparing them anyways?
+        return False
+
     def get_palette(self):
         return self.palette

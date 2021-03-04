@@ -188,7 +188,6 @@ class HelpCommand(Command):
     def __init__(self, command_list):
         self.command_list = command_list
         super(HelpCommand, self).__init__()
-        pass
 
     def run(self, *args):
         return ""
