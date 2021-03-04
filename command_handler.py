@@ -3,7 +3,7 @@ import dateparser
 # using sqlite
 from sqlite import Database
 
-db = Database("temp.db", "minGUItodo")
+db = Database("temp3.db", "minGUItodo")
 
 """ command class template
 class XXXXCommand(Command):
@@ -44,28 +44,36 @@ class AddCommand(Command):
         args = args[1]
         a = " ".join(args)
         args = a.split(",")
-        print(args)
+        # print(args)
         if len(args) > len(self.args) or len(args) < 2:
             return "Unmatched arguments."
         vals = {}
         for i in range(len(args)):
             vals[self.args[i]] = args[i]
 
-        if "due by" in vals and vals["due by"].strip() != "~":
-            dueby = dateparser.parse(vals["due by"]).timestamp()
+        if "due by" in vals and vals["due by"] and vals["due by"].strip() != "~":
+            dpp = dateparser.parse(vals["due by"])
+            if dpp:
+                dueby = dpp.timestamp()
+            else:
+                dueby = 0
         else:
             dueby = 0
 
-        if "comment" in vals and vals["comment"].strip() != "~":
+        if "comment" in vals and vals["comment"] and vals["comment"].strip() != "~":
             comment = vals["comment"].strip()
         else:
             comment = ""
 
-
-        date = dateparser.parse(vals["date"]).timestamp()
+        datepp = dateparser.parse(vals["date"])
+        if datepp:
+            date = datepp.timestamp()
+        else:
+            return "invalid date."
         name = vals["name"].strip()
 
         db.addValue(int(date), name, comment, int(dueby))
+        print("[CMD] adding event", name, "on", vals["date"]+" ("+str(date)+")", "comment:", comment, ", due by", str(dueby))
         return "Success" if db.cursor.rowcount == 1 else "Failure. See log for details."
 
     def tooltip(self):
@@ -80,7 +88,8 @@ class RefreshCommand(Command):
     def run(self, *args):
         global db
         # refresh everything
-        self.upper.refresh(db)
+        # db.deleteBefore(datetime.today().timestamp())
+        self.upper.refreshTopLeft(db)
         return "refreshed."
 
     def tooltip(self):
@@ -104,6 +113,76 @@ class EchoCommand(Command):
         return "echo [input]"
 
 
+class CompleteCommand(Command):
+    def __init__(self, *args):
+        super(CompleteCommand, self).__init__("id")
+
+    def run(self, *args):
+        args = args[1]
+        if len(args) != len(self.args):
+            return "Unmatched arguments."
+        vals = {}
+        for i in range(len(args)):
+            vals[self.args[i]] = args[i]
+        numericId = int(vals["id"], 16)
+        db.setComplete(numericId)
+        return "Success" if db.cursor.rowcount == 1 else "Failure. See log for details."
+
+    def tooltip(self):
+        return "complete [id]"
+
+class UncompleteCommand(Command):
+    def __init__(self, *args):
+        super(UncompleteCommand, self).__init__("id")
+
+    def run(self, *args):
+        args = args[1]
+        if len(args) != len(self.args):
+            return "Unmatched arguments."
+        vals = {}
+        for i in range(len(args)):
+            vals[self.args[i]] = args[i]
+        numericId = int(vals["id"], 16)
+        db.setComplete(numericId, False)
+        return "Success" if db.cursor.rowcount == 1 else "Failure. See log for details."
+
+    def tooltip(self):
+        return "uncomplete [id]"
+
+
+class DeleteCommand(Command):
+    def __init__(self, *args):
+        super(DeleteCommand, self).__init__("id")
+
+    def run(self, *args):
+        args = args[1]
+        if len(args) != len(self.args):
+            return "Unmatched arguments."
+        vals = {}
+        for i in range(len(args)):
+            vals[self.args[i]] = args[i]
+        numericId = int(vals["id"], 16)
+        db.delete(numericId)
+        return "Success" if db.cursor.rowcount == 1 else "Failure. See log for details."
+
+    def tooltip(self):
+        return "delete [id]"
+
+
+class DeleteShorthand(DeleteCommand):
+    def __init__(self, *args):
+        super(DeleteShorthand, self).__init__()
+
+    def tooltip(self):
+        return "del [id]"
+
+class DeleteRemoveShorthand(DeleteCommand):
+    def __init__(self, *args):
+        super(DeleteRemoveShorthand, self).__init__()
+
+    def tooltip(self):
+        return "remove [id]"
+
 
 class HelpCommand(Command):
     def __init__(self, command_list):
@@ -118,14 +197,17 @@ class HelpCommand(Command):
         return "Available commands: " + " ".join(self.command_list)
 
 
-
-
 class CommandHandler:
     def __init__(self, window):
         self.command_list = {
             "echo": EchoCommand(),
             "add": AddCommand(),
-            "refresh": RefreshCommand(window.upper)
+            "refresh": RefreshCommand(window.upper),
+            "complete": CompleteCommand(),
+            "uncomplete": UncompleteCommand(),
+            "delete": DeleteCommand(),
+            "del": DeleteShorthand(),
+            "remove": DeleteRemoveShorthand()
         }
         self.command_list["help"] = HelpCommand(self.command_list)
 

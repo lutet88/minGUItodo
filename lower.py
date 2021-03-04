@@ -1,6 +1,8 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import Qt, QRect, Slot
 import command_handler
+import threading
+import time
 
 
 class QHLine(QFrame):
@@ -22,16 +24,22 @@ class CommandField(QLineEdit):
     def return_pressed(self):
         text = self.text().strip()
         command = text.split(" ")[0]
+        # print(text, command)
         result = self.commandHandler.handle(command, text)
         self.setPlaceholderText(result)
         self.clear()
         self.text_changed()
+        if command in ["add", "del", "delete", "remove", "complete", "uncomplete"]:
+            self.refresh()
 
     def text_changed(self):
         text = self.text().strip()
         if text.split(" "):
             command = text.split(" ")[0]
             self.tooltip.setText(self.commandHandler.tooltip(command))
+
+    def refresh(self):
+        self.commandHandler.handle("refresh", "refresh")
 
 
 class Lower(QWidget):
@@ -72,3 +80,9 @@ class Lower(QWidget):
         # config line
         self.upperline.setLineWidth(3)
         self.upperline.setMidLineWidth(3)
+
+        # autorefresh
+        self.commandbox.refresh()
+
+    def refresh(self):
+        self.commandbox.refresh()

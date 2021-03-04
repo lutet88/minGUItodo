@@ -4,6 +4,7 @@ import styling
 from PySide6.QtGui import QPalette, QColor
 from PySide6.QtCore import Qt
 
+
 class Config(dict):
     def __init__(self):
         super(Config, self).__init__()
@@ -19,8 +20,8 @@ class Config(dict):
         fs.close()
         try:
             for style in self.styling:
-                self.styledata.append((eval("QPalette."+style), eval(self.styling[style])))
-            print(self.styledata)
+                self.styledata.append((eval("QPalette." + style), eval(self.styling[style])))
+            print("[INFO] styling:", self.styledata)
             self.palette = styling.Palette(self.styledata)
             print("[INFO] style.yml loaded")
         except Exception:
